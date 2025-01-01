@@ -29,7 +29,8 @@ axiosInstance.interceptors.response.use(
 
 export const get = <T>(
   url: string,
-  debounce = true
+  debounce = true,
+  needToken = true
 ): Promise<IResponseType<T>> | null => {
   if (debounce) {
     if (requestList.has(url)) {
@@ -39,13 +40,23 @@ export const get = <T>(
       requestList.add(url);
     }
   }
-  return axiosInstance.get(url);
+  const token = localStorage.getItem("token") ?? "";
+  if (needToken) {
+    return axiosInstance.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  } else {
+    return axiosInstance.get(url)
+  }
 };
 
 export const post = <T>(
   url: string,
   data?: any,
-  debounce = true
+  debounce = true,
+  needToken = true
 ): Promise<IResponseType<T>> | null => {
   if (debounce) {
     if (requestList.has(url + JSON.stringify(data))) {
@@ -55,5 +66,14 @@ export const post = <T>(
       requestList.add(url + JSON.stringify(data));
     }
   }
-  return axiosInstance.post(url, data);
+  const token = localStorage.getItem("token") ?? "";
+  if (needToken) {
+    return axiosInstance.post(url, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+  } else {
+    return axiosInstance.post(url, data)
+  }
 };

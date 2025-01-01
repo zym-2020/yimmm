@@ -22,9 +22,9 @@ const RouterGuard: React.FC<RouterGuardProps> = (props) => {
   const token = localStorage.getItem("token");
   NProgress.start();
   if (token) {
-    if (location.pathname === "/login") {
-      return <Navigate to="/" />;
-    }
+    // if (location.pathname === "/login") {
+    //   return <Navigate to="/" />;
+    // }
     NProgress.done();
     return props.children;
   } else {

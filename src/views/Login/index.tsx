@@ -10,8 +10,8 @@ const Login = () => {
       <Button
         onClick={async () => {
           const res = await login("yimmmzhang", "123");
-          if (res && res.code === 0) {
-            localStorage.setItem("token", "yimmmzhang");
+          if (res) {
+            localStorage.setItem("token", res.data);
             navigate("/");
           }
         }}>
