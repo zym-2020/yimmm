@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { verifyToken } from "@/utils/common";
+import { verifyToken, returnErrResponese, EErrorCode } from "@/utils/common";
 
 const whiteList = ["/login"];
 export const handleToken = async (
@@ -13,8 +13,7 @@ export const handleToken = async (
     const obj = await verifyToken(
       req.headers.authorization?.substring(7) ?? ""
     ).catch(() => {
-      console.log("token解析失败");
-      res.send("xixixi");
+      res.send(returnErrResponese(EErrorCode.TOKEN_WRONG));
     });
     if (obj) {
       next();

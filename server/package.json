@@ -5,16 +5,20 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "ts-node-dev --respawn index.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "dev": "webpack server --config webpack.config.js"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "@types/jsonwebtoken": "^9.0.7",
+    "@types/pg": "^8.11.10",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
-    "module-alias": "^2.2.3"
+    "module-alias": "^2.2.3",
+    "pg": "^8.13.1",
+    "ts-loader": "^9.5.1"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
