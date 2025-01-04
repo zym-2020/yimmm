@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import { openMessage } from "@/utils/common";
-import { IResponseType } from "@/interface";
+import { IResponseType, EErrorCode } from "@/interface";
+import { useNavigate } from "react-router";
 
 const axiosInstance = axios.create({
   baseURL: "/yimmm",
@@ -13,7 +14,19 @@ axiosInstance.interceptors.response.use(
     setTimeout(() => {
       requestList.delete(response.config.url + response.config.data);
     }, 500);
-    return response.data;
+    switch (response.data.code) {
+      case 0:
+        return response.data;
+      case EErrorCode.TOKEN_WRONG | EErrorCode.NO_TOKEN:
+        openMessage(`${response.data.msg}`, "error");
+        localStorage.removeItem("token")
+        const navigate = useNavigate();
+        navigate("/login")
+        return null;
+      default:
+        openMessage(`${response.data.msg}`, "error");
+        return null;
+    }
   },
   (err) => {
     if (axios.isCancel(err)) {
@@ -48,7 +61,7 @@ export const get = <T>(
       },
     });
   } else {
-    return axiosInstance.get(url)
+    return axiosInstance.get(url);
   }
 };
 
@@ -72,8 +85,8 @@ export const post = <T>(
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    })
+    });
   } else {
-    return axiosInstance.post(url, data)
+    return axiosInstance.post(url, data);
   }
 };

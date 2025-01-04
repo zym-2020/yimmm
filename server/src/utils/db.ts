@@ -16,5 +16,3 @@ pool.connect((err) => {
     console.log("成功连接到 PostgreSQL");
   }
 });
-
-module.exports = pool;

@@ -9,7 +9,7 @@ const Login = () => {
       <div>登录页</div>
       <Button
         onClick={async () => {
-          const res = await login("yimmmzhang", "123");
+          const res = await login("1161384816@qq.com", "123");
           if (res) {
             localStorage.setItem("token", res.data);
             navigate("/");
