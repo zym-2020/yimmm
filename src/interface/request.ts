@@ -17,3 +17,9 @@ export enum EErrorCode {
   DATASOURCE_ERROR = -10, // 数据源错误
   NO_ACCESS = -11, // 没有权限
 }
+
+export interface IGetUserInfoRes {
+  name: string;
+  account: string;
+  role: number;
+}

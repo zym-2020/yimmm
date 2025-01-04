@@ -1,9 +1,11 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import { verifyToken, returnErrResponese, EErrorCode } from "@/utils/common";
+import { ICustomRequest } from "@/interface";
+
 
 const whiteList = ["/login"];
 export const handleToken = async (
-  req: Request,
+  req: ICustomRequest,
   res: Response,
   next: NextFunction
 ) => {
@@ -16,6 +18,7 @@ export const handleToken = async (
       res.send(returnErrResponese(EErrorCode.TOKEN_WRONG));
     });
     if (obj) {
+      req.customParams = obj
       next();
     }
   }

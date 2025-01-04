@@ -17,7 +17,7 @@ axiosInstance.interceptors.response.use(
     switch (response.data.code) {
       case 0:
         return response.data;
-      case EErrorCode.TOKEN_WRONG | EErrorCode.NO_TOKEN:
+      case EErrorCode.TOKEN_WRONG || EErrorCode.NO_TOKEN:
         openMessage(`${response.data.msg}`, "error");
         localStorage.removeItem("token")
         const navigate = useNavigate();

@@ -1,6 +1,6 @@
 import { Button } from "antd";
 import { useNavigate } from "react-router";
-import { login } from "@/require";
+import { login } from "@/request";
 
 const Login = () => {
   const navigate = useNavigate();

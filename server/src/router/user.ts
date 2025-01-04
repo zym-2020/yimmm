@@ -5,7 +5,7 @@ import {
   returnErrResponese,
   EErrorCode,
 } from "@/utils/common";
-import { IUserReq } from "@/interface";
+import { ICustomRequest, IUserReq } from "@/interface";
 import { queryUserByAccount } from "./user-dao";
 
 const router = express.Router();
@@ -31,6 +31,28 @@ router.post("/login", async (req: Request<any, any, IUserReq>, res) => {
   } else {
     res.send(returnErrResponese(EErrorCode.NO_OBJECT));
   }
+});
+
+router.get("/getUserInfo", async (req: ICustomRequest, res) => {
+  if (req.customParams) {
+    const account = req.customParams.account;
+    const user = await queryUserByAccount(account).catch((err) => {
+      console.log("err", err);
+      res.send(returnErrResponese(EErrorCode.DEFAULT_EXCEPTION));
+      return;
+    });
+    if (user && user.rows.length > 0)
+      res.send(
+        returnResponse({
+          account: user.rows[0].account,
+          name: user.rows[0].name,
+          role: user.rows[0].role,
+        })
+      );
+    else res.send(returnErrResponese(EErrorCode.NO_OBJECT));
+    return;
+  }
+  res.send(returnErrResponese(EErrorCode.TOKEN_WRONG));
 });
 
 export default router;
