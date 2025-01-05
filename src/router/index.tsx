@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect } from "react";
 import App from "@/views/App";
 import Login from "@/views/Login";
 import Layout from "@/views/Layout";
@@ -12,32 +12,44 @@ import {
 } from "react-router";
 import NProgress from "nprogress";
 import { getUserInfo } from "@/request";
+import { useAppSelector, useAppDispatch } from "@/hooks";
+import { updateUserInfo } from "@/store/user";
 
 interface RouterGuardProps {
   children: React.ReactNode;
 }
 
 const RouterGuard: React.FC<RouterGuardProps> = (props) => {
-  const [hasUserInfo, setHasUserInfo] = useState(false);
-  const flag = useRef(true)
+  const userInfo = useAppSelector((state) => state.userInfo);
+  const dispatch = useAppDispatch();
+  const location = useLocation();
 
   const whiteList = ["/", "/login"];
-  const location = useLocation();
   const token = localStorage.getItem("token");
-  NProgress.start();
+
   useEffect(() => {
     (async () => {
-      if (flag.current) {
-        const res = await getUserInfo();
-        if (res) {
-          setHasUserInfo(true);
-        }
+      if (userInfo.hasUserFlag || !token) {
+        return;
+      }
+      const res = await getUserInfo();
+      if (res) {
+        dispatch({
+          type: updateUserInfo.type,
+          payload: {
+            name: res.data.name,
+            acount: res.data.account,
+            role: res.data.role,
+          },
+        });
       }
     })();
-    flag.current = false
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
+
+  NProgress.start();
   if (token) {
-    if (hasUserInfo) {
+    if (userInfo.hasUserFlag) {
       if (location.pathname === "/login") {
         NProgress.done();
         return <Navigate to="/" />;

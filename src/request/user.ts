@@ -14,5 +14,5 @@ export const login = (account: string, password: string) => {
 };
 
 export const getUserInfo = () => {
-  return get<IGetUserInfoRes>("/getUserInfo")
+  return get<IGetUserInfoRes>("/getUserInfo", false)
 }

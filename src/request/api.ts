@@ -1,7 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { openMessage } from "@/utils/common";
 import { IResponseType, EErrorCode } from "@/interface";
-import { useNavigate } from "react-router";
 
 const axiosInstance = axios.create({
   baseURL: "/yimmm",
@@ -20,8 +19,7 @@ axiosInstance.interceptors.response.use(
       case EErrorCode.TOKEN_WRONG || EErrorCode.NO_TOKEN:
         openMessage(`${response.data.msg}`, "error");
         localStorage.removeItem("token")
-        const navigate = useNavigate();
-        navigate("/login")
+        window.location.href = "/login"
         return null;
       default:
         openMessage(`${response.data.msg}`, "error");
@@ -35,7 +33,7 @@ axiosInstance.interceptors.response.use(
     } else {
       openMessage("请求错误", "error");
       requestList.delete(err.config.url + err.config.data);
-      return err.data;
+      return null;
     }
   }
 );
