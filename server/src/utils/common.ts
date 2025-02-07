@@ -1,5 +1,8 @@
+import { privateDecrypt } from 'crypto' 
 import { ITokenParam, ITokenResult } from "@/interface";
 import jwt from "jsonwebtoken";
+import fs from "fs";
+import path from "path";
 
 export enum EErrorCode {
   DEFAULT_EXCEPTION = -1, // 默认的服务器内部异常，我并不想进行处理！！
@@ -73,4 +76,13 @@ export const verifyToken = (token: string) => {
       resolve(decode as ITokenResult);
     });
   });
+};
+
+export const RASDecode = (data: string) => {
+  const filePath = path.resolve(__dirname, "../config/privateKey.pem");
+  const privateKey = fs.readFileSync(filePath, "utf-8");
+  // const encrypt = new JSEncrypt();
+  // encrypt.setPrivateKey(privateKey)
+  // return encrypt.decrypt(data)
+  return privateDecrypt(privateKey, Buffer.from(data, 'base64')).toString();
 };

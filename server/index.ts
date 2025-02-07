@@ -2,6 +2,7 @@ require("module-alias/register");
 import express, { Request, Response } from "express";
 import { handleToken } from "@/utils/middleware";
 import userRouter from "@/router/user";
+import commonRouter from '@/router/common'
 
 const app = express();
 const port = 8080;
@@ -9,6 +10,7 @@ const port = 8080;
 app.use(express.json());
 app.use(handleToken);
 app.use(userRouter);
+app.use(commonRouter)
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World!");

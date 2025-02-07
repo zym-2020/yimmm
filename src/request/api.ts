@@ -11,15 +11,15 @@ const requestList = new Set<String>();
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
     setTimeout(() => {
-      requestList.delete(response.config.url + response.config.data);
+      requestList.delete(response.config.url + (response.config.data ?? ""));
     }, 500);
     switch (response.data.code) {
       case 0:
         return response.data;
       case EErrorCode.TOKEN_WRONG || EErrorCode.NO_TOKEN:
         openMessage(`${response.data.msg}`, "error");
-        localStorage.removeItem("token")
-        window.location.href = "/login"
+        localStorage.removeItem("token");
+        window.location.href = "/login";
         return null;
       default:
         openMessage(`${response.data.msg}`, "error");
@@ -32,7 +32,7 @@ axiosInstance.interceptors.response.use(
       return null;
     } else {
       openMessage("请求错误", "error");
-      requestList.delete(err.config.url + err.config.data);
+      requestList.delete(err.config.url + (err.config.data ?? ""));
       return null;
     }
   }

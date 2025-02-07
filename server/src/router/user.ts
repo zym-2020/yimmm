@@ -4,6 +4,7 @@ import {
   generateToken,
   returnErrResponese,
   EErrorCode,
+  RASDecode,
 } from "@/utils/common";
 import { ICustomRequest, IUserReq } from "@/interface";
 import { queryUserByAccount } from "./user-dao";
@@ -17,17 +18,23 @@ router.post("/login", async (req: Request<any, any, IUserReq>, res) => {
     return;
   });
   if (user && user.rows.length > 0) {
-    if (user.rows[0].password !== req.body.password)
-      res.send(returnErrResponese(EErrorCode.USER_PASSWORD_NOT_MATCH));
-    else
-      res.send(
-        returnResponse(
-          generateToken({
-            account: user.rows[0].account,
-            name: user.rows[0].name,
-          })
-        )
-      );
+    try {
+      const decodePassword = RASDecode(req.body.password);
+      if (user.rows[0].password !== decodePassword)
+        res.send(returnErrResponese(EErrorCode.USER_PASSWORD_NOT_MATCH));
+      else
+        res.send(
+          returnResponse(
+            generateToken({
+              account: user.rows[0].account,
+              name: user.rows[0].name,
+            })
+          )
+        );
+    } catch (e) {
+      console.log(e);
+      res.send(returnErrResponese(EErrorCode.DEFAULT_EXCEPTION));
+    }
   } else {
     res.send(returnErrResponese(EErrorCode.NO_OBJECT));
   }

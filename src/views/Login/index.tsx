@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Button, Form, Input, Flex } from "antd";
 import { useNavigate } from "react-router";
-import { login } from "@/request";
+import { login, getPublicKey } from "@/request";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
+import forge from 'node-forge'
 import "./index.less";
 
 const LoginForm = () => {
@@ -15,10 +16,19 @@ const LoginForm = () => {
     form
       .validateFields()
       .then(async () => {
-        const res = await login(account, password);
-        if (res) {
-          localStorage.setItem("token", res.data);
-          navigate("/");
+        const { pki, util } = forge;
+        const publicKeyPem = await getPublicKey();
+        if (publicKeyPem) {
+          const publicKey = pki.publicKeyFromPem(publicKeyPem.data);
+          const md = forge.md.md5.create()
+          md.update(password)
+          const hash = md.digest().toHex();
+          const encodePassword = util.encode64(publicKey.encrypt(hash, 'RSA-OAEP'));
+          const res = await login(account, encodePassword);
+          if (res) {
+            localStorage.setItem("token", res.data);
+            navigate("/");
+          }
         }
       })
       .catch(() => {});

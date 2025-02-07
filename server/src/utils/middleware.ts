@@ -3,7 +3,7 @@ import { verifyToken, returnErrResponese, EErrorCode } from "@/utils/common";
 import { ICustomRequest } from "@/interface";
 
 
-const whiteList = ["/login"];
+const whiteList = ["/login", "/getPublicKey"];
 export const handleToken = async (
   req: ICustomRequest,
   res: Response,
