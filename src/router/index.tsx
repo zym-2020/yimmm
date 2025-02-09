@@ -3,6 +3,8 @@ import App from "@/views/App";
 import Login from "@/views/Login";
 import Layout from "@/views/Layout";
 import Profile from "@/views/Profile";
+import Register from "@/views/Register";
+import NotFoundPage from "@/views/404";
 import {
   BrowserRouter,
   Routes,
@@ -24,33 +26,40 @@ const RouterGuard: React.FC<RouterGuardProps> = (props) => {
   const dispatch = useAppDispatch();
   const location = useLocation();
 
-  const whiteList = ["/", "/login"];
+  const whiteList = ["/", "/login", "/register"];
   const token = localStorage.getItem("token");
 
   useEffect(() => {
+    let ignore = false;
     (async () => {
+      console.log("zym");
       if (userInfo.hasUserFlag || !token) {
         return;
       }
       const res = await getUserInfo();
       if (res) {
-        dispatch({
-          type: updateUserInfo.type,
-          payload: {
-            name: res.data.name,
-            acount: res.data.account,
-            role: res.data.role,
-          },
-        });
+        if (!ignore) {
+          dispatch({
+            type: updateUserInfo.type,
+            payload: {
+              name: res.data.name,
+              acount: res.data.account,
+              role: res.data.role,
+            },
+          });
+        }
       }
     })();
+    return () => {
+      ignore = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
   NProgress.start();
   if (token) {
     if (userInfo.hasUserFlag) {
-      if (location.pathname === "/login") {
+      if (location.pathname === "/login" || location.pathname === "/register") {
         NProgress.done();
         return <Navigate to="/" />;
       }
@@ -75,10 +84,13 @@ const Router = () => {
       <RouterGuard>
         <Routes>
           <Route path="/login" element={<Login />}></Route>
+          <Route path="/register" element={<Register />}></Route>
           <Route element={<Layout />}>
             <Route path="/" element={<App />}></Route>
             <Route path="/profile" element={<Profile />}></Route>
           </Route>
+          <Route path="/404" element={<NotFoundPage />}></Route>
+          <Route path="*" element={<Navigate to="/404" replace />}></Route>
         </Routes>
       </RouterGuard>
     </BrowserRouter>

@@ -3,7 +3,7 @@ import { Button, Form, Input, Flex } from "antd";
 import { useNavigate } from "react-router";
 import { login, getPublicKey } from "@/request";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import forge from 'node-forge'
+import forge from "node-forge";
 import "./index.less";
 
 const LoginForm = () => {
@@ -20,10 +20,12 @@ const LoginForm = () => {
         const publicKeyPem = await getPublicKey();
         if (publicKeyPem) {
           const publicKey = pki.publicKeyFromPem(publicKeyPem.data);
-          const md = forge.md.md5.create()
-          md.update(password)
+          const md = forge.md.md5.create();
+          md.update(password);
           const hash = md.digest().toHex();
-          const encodePassword = util.encode64(publicKey.encrypt(hash, 'RSA-OAEP'));
+          const encodePassword = util.encode64(
+            publicKey.encrypt(hash, "RSA-OAEP")
+          );
           const res = await login(account, encodePassword);
           if (res) {
             localStorage.setItem("token", res.data);
@@ -33,6 +35,7 @@ const LoginForm = () => {
       })
       .catch(() => {});
   };
+
   return (
     <div className="login-form">
       <Form form={form}>
@@ -66,7 +69,13 @@ const LoginForm = () => {
         </Form.Item>
       </Form>
       <Flex justify="space-between" align="center">
-        <span className="login-form-text-btn">注册</span>
+        <span
+          className="login-form-text-btn"
+          onClick={() => {
+            navigate("/register");
+          }}>
+          注册
+        </span>
         <span className="login-form-text-btn">忘记密码？</span>
       </Flex>
     </div>
