@@ -6,8 +6,8 @@ import {
   EErrorCode,
   RASDecode,
 } from "@/utils/common";
-import { ICustomRequest, IUserReq } from "@/interface";
-import { queryUserByAccount } from "./user-dao";
+import { ICustomRequest, IUserReq, IRegisterReq } from "@/interface";
+import { queryUserByAccount, addUser } from "./user-dao";
 
 const router = express.Router();
 
@@ -60,6 +60,25 @@ router.get("/getUserInfo", async (req: ICustomRequest, res) => {
     return;
   }
   res.send(returnErrResponese(EErrorCode.TOKEN_WRONG));
+});
+
+router.post("/register", async (req: Request<any, any, IRegisterReq>, res) => {
+  const user = await queryUserByAccount(req.body.account).catch((err) => {
+    console.log("err", err);
+    res.send(returnErrResponese(EErrorCode.DEFAULT_EXCEPTION));
+    return;
+  });
+  if (user && user.rows.length) {
+    res.send(returnErrResponese(EErrorCode.EXIST_OBJECT));
+    return;
+  }
+  const decodePassword = RASDecode(req.body.password);
+  await addUser({ ...req.body, password: decodePassword }).catch((e) => {
+    console.log(e);
+    res.send(returnErrResponese(EErrorCode.DEFAULT_EXCEPTION));
+    return;
+  });
+  res.send(returnResponse(null));
 });
 
 export default router;

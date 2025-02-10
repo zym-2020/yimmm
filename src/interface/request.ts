@@ -23,3 +23,9 @@ export interface IGetUserInfoRes {
   account: string;
   role: number;
 }
+
+export interface IRegisterFormReq {
+  account: string;
+  password: string;
+  name: string;
+}

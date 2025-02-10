@@ -3,7 +3,7 @@ import { Button, Form, Input, Flex } from "antd";
 import { useNavigate } from "react-router";
 import { login, getPublicKey } from "@/request";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import forge from "node-forge";
+import { encodeByRAS, encodeByMD5 } from "@/utils/forge";
 import "./index.less";
 
 const LoginForm = () => {
@@ -16,16 +16,10 @@ const LoginForm = () => {
     form
       .validateFields()
       .then(async () => {
-        const { pki, util } = forge;
         const publicKeyPem = await getPublicKey();
         if (publicKeyPem) {
-          const publicKey = pki.publicKeyFromPem(publicKeyPem.data);
-          const md = forge.md.md5.create();
-          md.update(password);
-          const hash = md.digest().toHex();
-          const encodePassword = util.encode64(
-            publicKey.encrypt(hash, "RSA-OAEP")
-          );
+          const hash = encodeByMD5(password);
+          const encodePassword = encodeByRAS(publicKeyPem.data, hash);
           const res = await login(account, encodePassword);
           if (res) {
             localStorage.setItem("token", res.data);

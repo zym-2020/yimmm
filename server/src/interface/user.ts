@@ -32,3 +32,9 @@ export interface IUserReq {
   account: string;
   password: string;
 }
+
+export interface IRegisterReq {
+  account: string;
+  password: string;
+  name: string;
+}
