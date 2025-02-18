@@ -1,4 +1,4 @@
-import { privateDecrypt } from 'crypto' 
+import { privateDecrypt, publicEncrypt } from "crypto";
 import { ITokenParam, ITokenResult } from "@/interface";
 import jwt from "jsonwebtoken";
 import fs from "fs";
@@ -84,5 +84,13 @@ export const RASDecode = (data: string) => {
   // const encrypt = new JSEncrypt();
   // encrypt.setPrivateKey(privateKey)
   // return encrypt.decrypt(data)
-  return privateDecrypt(privateKey, Buffer.from(data, 'base64')).toString();
+  return privateDecrypt(privateKey, Buffer.from(data, "base64")).toString();
+};
+
+export const RASEncode = (data: string) => {
+  const filePath = path.resolve(__dirname, "../config/publicKey.pem");
+  const publicKey = fs.readFileSync(filePath, "utf-8");
+  return publicEncrypt(publicKey, Buffer.from(data, "utf-8")).toString(
+    "base64"
+  );
 };

@@ -5,6 +5,7 @@ import {
   returnErrResponese,
   EErrorCode,
   RASDecode,
+  RASEncode,
 } from "@/utils/common";
 import { ICustomRequest, IUserReq, IRegisterReq } from "@/interface";
 import { queryUserByAccount, addUser } from "./user-dao";
@@ -73,10 +74,20 @@ router.post("/register", async (req: Request<any, any, IRegisterReq>, res) => {
     return;
   }
   const decodePassword = RASDecode(req.body.password);
-  await addUser({ ...req.body, password: decodePassword }).catch((e) => {
-    console.log(e);
-    res.send(returnErrResponese(EErrorCode.DEFAULT_EXCEPTION));
-    return;
+  const userJsonString = JSON.stringify({
+    ...req.body,
+    password: decodePassword,
+  });
+  // await addUser({ ...req.body, password: decodePassword }).catch((e) => {
+  //   console.log(e);
+  //   res.send(returnErrResponese(EErrorCode.DEFAULT_EXCEPTION));
+  //   return;
+  // });
+  res.cookie("user", RASEncode(userJsonString), {
+    maxAge: 1000 * 60 * 3,
+  });
+  res.cookie("account", req.body.account, {
+    maxAge: 1000 * 60 * 3,
   });
   res.send(returnResponse(null));
 });

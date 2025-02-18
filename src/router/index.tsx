@@ -4,6 +4,7 @@ import Login from "@/views/Login";
 import Layout from "@/views/Layout";
 import Profile from "@/views/Profile";
 import Register from "@/views/Register";
+import ValidateAccount from "@/views/ValidateAccount";
 import NotFoundPage from "@/views/404";
 import {
   BrowserRouter,
@@ -26,11 +27,10 @@ const RouterGuard: React.FC<RouterGuardProps> = (props) => {
   const dispatch = useAppDispatch();
   const location = useLocation();
 
-  const whiteList = ["/", "/login", "/register"];
+  const whiteList = ["/", "/login", "/register", "/validateAccount"];
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    let ignore = false;
     (async () => {
       console.log("zym");
       if (userInfo.hasUserFlag || !token) {
@@ -38,21 +38,17 @@ const RouterGuard: React.FC<RouterGuardProps> = (props) => {
       }
       const res = await getUserInfo();
       if (res) {
-        if (!ignore) {
-          dispatch({
-            type: updateUserInfo.type,
-            payload: {
-              name: res.data.name,
-              acount: res.data.account,
-              role: res.data.role,
-            },
-          });
-        }
+        dispatch({
+          type: updateUserInfo.type,
+          payload: {
+            name: res.data.name,
+            acount: res.data.account,
+            role: res.data.role,
+          },
+        });
       }
     })();
-    return () => {
-      ignore = true;
-    };
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
@@ -85,6 +81,7 @@ const Router = () => {
         <Routes>
           <Route path="/login" element={<Login />}></Route>
           <Route path="/register" element={<Register />}></Route>
+          <Route path="/validateAccount" element={<ValidateAccount />}></Route>
           <Route element={<Layout />}>
             <Route path="/" element={<App />}></Route>
             <Route path="/profile" element={<Profile />}></Route>

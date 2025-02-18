@@ -4,10 +4,20 @@ import { useState } from "react";
 import { IRegisterFormReq } from "@/interface";
 import { register, getPublicKey } from "@/request";
 import { encodeByRAS, encodeByMD5 } from "@/utils/forge";
-import { openMessage } from "@/utils/common";
-import { useNavigate } from "react-router";
+// import { openMessage } from "@/utils/common";
+import { useNavigate, Navigate } from "react-router";
 
 const Register = () => {
+  const userExists = document.cookie
+    .split(";")
+    .some((item) => item.trim().startsWith("user="));
+  const accountExists = document.cookie
+    .split(";")
+    .some((item) => item.trim().startsWith("account="));
+  if (userExists && accountExists) {
+    return <Navigate to="/validateAccount" />;
+  }
+
   return (
     <div>
       <RegisterForm />
@@ -38,7 +48,10 @@ const RegisterForm = () => {
       <Form.Item
         label="账号"
         name="account"
-        rules={[{ required: true, message: "账号不得为空" }]}>
+        rules={[
+          { type: "email" },
+          { required: true, message: "账号不得为空" },
+        ]}>
         <Input />
       </Form.Item>
       <Form.Item
@@ -60,20 +73,25 @@ const RegisterForm = () => {
         <Button
           block
           type="primary"
-          onClick={async () => {
-            const publicKeyPem = await getPublicKey();
-            if (publicKeyPem) {
-              const hash = encodeByMD5(formData.password);
-              const encodePassword = encodeByRAS(publicKeyPem.data, hash);
-              const res = await register({
-                ...formData,
-                password: encodePassword,
-              });
-              if (res) {
-                openMessage("注册成功", "success");
-                navigate("/login");
-              }
-            }
+          onClick={() => {
+            form
+              .validateFields()
+              .then(async () => {
+                const publicKeyPem = await getPublicKey();
+                if (publicKeyPem) {
+                  const hash = encodeByMD5(formData.password);
+                  const encodePassword = encodeByRAS(publicKeyPem.data, hash);
+                  const res = await register({
+                    ...formData,
+                    password: encodePassword,
+                  });
+                  if (res) {
+                    // openMessage("注册成功", "success");
+                    navigate("/validateAccount");
+                  }
+                }
+              })
+              .catch(() => {});
           }}>
           注册
         </Button>
