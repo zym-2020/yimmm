@@ -11,12 +11,16 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@types/cookie-parser": "^1.4.8",
     "@types/jsonwebtoken": "^9.0.7",
+    "@types/nodemailer": "^6.4.17",
     "@types/pg": "^8.11.10",
+    "cookie-parser": "^1.4.7",
     "express": "^4.21.2",
     "jsencrypt": "^3.3.2",
     "jsonwebtoken": "^9.0.2",
     "module-alias": "^2.2.3",
+    "nodemailer": "^6.10.0",
     "pg": "^8.13.1",
     "ts-loader": "^9.5.1"
   },

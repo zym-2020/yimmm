@@ -7,8 +7,10 @@ import {
   RASDecode,
   RASEncode,
 } from "@/utils/common";
-import { ICustomRequest, IUserReq, IRegisterReq } from "@/interface";
-import { queryUserByAccount, addUser } from "./user-dao";
+import { sendValidateCode, generateValidateCode } from "@/utils/email";
+import { ICustomRequest, IUserReq, IRegisterReq, IUser } from "@/interface";
+import { queryUserByAccount, addUser } from "@/dao/user-dao";
+import { addValidateCode } from "@/dao/validate-code-dao";
 
 const router = express.Router();
 
@@ -75,9 +77,10 @@ router.post("/register", async (req: Request<any, any, IRegisterReq>, res) => {
   }
   const decodePassword = RASDecode(req.body.password);
   const userJsonString = JSON.stringify({
-    ...req.body,
+    // ...req.body,
     password: decodePassword,
   });
+
   // await addUser({ ...req.body, password: decodePassword }).catch((e) => {
   //   console.log(e);
   //   res.send(returnErrResponese(EErrorCode.DEFAULT_EXCEPTION));
@@ -89,7 +92,24 @@ router.post("/register", async (req: Request<any, any, IRegisterReq>, res) => {
   res.cookie("account", req.body.account, {
     maxAge: 1000 * 60 * 3,
   });
+  const code = generateValidateCode();
+  sendValidateCode(req.body.account, code);
+  await addValidateCode({
+    account: req.body.account,
+    code: code,
+    time: new Date().getTime(),
+  }).catch((e) => {
+    console.log(e);
+  });
   res.send(returnResponse(null));
+});
+
+router.post("/validateAccount", async (req: Request, res) => {
+  const cookies = req.cookies;
+  const account: string = cookies["account"];
+  const encodeUserString: string = cookies["user"];
+  const userJsonString = RASDecode(encodeUserString);
+  const user: IRegisterReq = JSON.parse(userJsonString);
 });
 
 export default router;
