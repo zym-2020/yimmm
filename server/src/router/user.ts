@@ -5,12 +5,14 @@ import {
   returnErrResponese,
   EErrorCode,
   RASDecode,
-  RASEncode,
 } from "@/utils/common";
 import { sendValidateCode, generateValidateCode } from "@/utils/email";
 import { ICustomRequest, IUserReq, IRegisterReq, IUser } from "@/interface";
 import { queryUserByAccount, addUser } from "@/dao/user-dao";
-import { addValidateCode } from "@/dao/validate-code-dao";
+import {
+  addValidateCode,
+  queryRecodeByAccountAndCode,
+} from "@/dao/validate-code-dao";
 
 const router = express.Router();
 
@@ -75,21 +77,9 @@ router.post("/register", async (req: Request<any, any, IRegisterReq>, res) => {
     res.send(returnErrResponese(EErrorCode.EXIST_OBJECT));
     return;
   }
-  const decodePassword = RASDecode(req.body.password);
-  const userJsonString = JSON.stringify({
-    // ...req.body,
-    password: decodePassword,
-  });
+  const userJsonString = JSON.stringify(req.body);
 
-  // await addUser({ ...req.body, password: decodePassword }).catch((e) => {
-  //   console.log(e);
-  //   res.send(returnErrResponese(EErrorCode.DEFAULT_EXCEPTION));
-  //   return;
-  // });
-  res.cookie("user", RASEncode(userJsonString), {
-    maxAge: 1000 * 60 * 3,
-  });
-  res.cookie("account", req.body.account, {
+  res.cookie("user", userJsonString, {
     maxAge: 1000 * 60 * 3,
   });
   const code = generateValidateCode();
@@ -104,12 +94,41 @@ router.post("/register", async (req: Request<any, any, IRegisterReq>, res) => {
   res.send(returnResponse(null));
 });
 
-router.post("/validateAccount", async (req: Request, res) => {
+router.post("/validateAccount/:code", async (req: Request, res) => {
   const cookies = req.cookies;
-  const account: string = cookies["account"];
-  const encodeUserString: string = cookies["user"];
-  const userJsonString = RASDecode(encodeUserString);
-  const user: IRegisterReq = JSON.parse(userJsonString);
+  const userJsonString: string = cookies["user"];
+  if (userJsonString) {
+    try {
+      const user: IRegisterReq = JSON.parse(userJsonString);
+      const result = await queryRecodeByAccountAndCode(
+        user.account,
+        req.params.code
+      ).catch((err) => {
+        console.log("err", err);
+        res.send(returnErrResponese(EErrorCode.DEFAULT_EXCEPTION));
+        return;
+      });
+      if (result && result.rowCount === 1) {
+        if (result.rows[0].time + 1000 * 60 * 5 > new Date().getTime()) {
+          const decodePassword = RASDecode(user.password);
+          await addUser({ ...user, password: decodePassword }).catch((e) => {
+            console.log(e);
+            res.send(returnErrResponese(EErrorCode.DEFAULT_EXCEPTION));
+            return;
+          });
+        } else {
+          res.send(returnErrResponese(EErrorCode.INVALID_VERIFICATION_CODE));
+          return;
+        }
+      }
+      res.send(returnErrResponese(EErrorCode.NO_OBJECT));
+    } catch (e) {
+      console.log(e);
+      res.send(returnErrResponese(EErrorCode.DEFAULT_EXCEPTION));
+      return;
+    }
+  }
+  res.send(returnErrResponese(EErrorCode.NO_OBJECT));
 });
 
 export default router;

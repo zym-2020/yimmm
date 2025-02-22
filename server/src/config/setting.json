@@ -1,7 +1,18 @@
 {
+  "postgresql": {
     "user": "postgres",
     "host": "localhost",
     "database": "yimmm",
     "password": "123",
     "port": 5432
+  },
+  "smtp": {
+    "host": "smtp.qq.com",
+    "port": 465,
+    "secure": true,
+    "auth": {
+      "user": "1161384816@qq.com",
+      "pass": "itjlyjfpgvqmihgi"
+    }
+  }
 }

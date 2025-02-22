@@ -4,15 +4,16 @@
  * Copyright © YourCompanyName All rights reserved
  */
 import nodemailer from "nodemailer";
+import config from "@/config/setting.json";
 
 // 创建一个 SMTP 传输对象
 const transporter = nodemailer.createTransport({
-  host: "smtp.qq.com", // SMTP 服务器地址
-  port: 465, // SMTP 端口（通常是 587 或 465）
-  secure: true, // true 为 465，false 为其他端口
+  host: config.smtp.host, // SMTP 服务器地址
+  port: config.smtp.port, // SMTP 端口（通常是 587 或 465）
+  secure: config.smtp.secure, // true 为 465，false 为其他端口
   auth: {
-    user: "1161384816@qq.com", // 你的邮箱
-    pass: "itjlyjfpgvqmihgi", // 你的邮箱密码
+    user: config.smtp.auth.user, // 你的邮箱
+    pass: config.smtp.auth.pass, // 你的邮箱密码
   },
 });
 
@@ -25,7 +26,6 @@ export const generateValidateCode = () => {
 };
 
 export const sendValidateCode = (to: string, validateCode: string) => {
-  
   const mailOptions = {
     from: "1161384816@qq.com", // 发件人
     to: to, // 收件人

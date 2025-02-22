@@ -11,10 +11,7 @@ const Register = () => {
   const userExists = document.cookie
     .split(";")
     .some((item) => item.trim().startsWith("user="));
-  const accountExists = document.cookie
-    .split(";")
-    .some((item) => item.trim().startsWith("account="));
-  if (userExists && accountExists) {
+  if (userExists) {
     return <Navigate to="/validateAccount" />;
   }
 

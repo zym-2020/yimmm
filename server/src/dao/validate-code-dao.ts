@@ -10,3 +10,13 @@ export const addValidateCode = async (validateCode: IValidateCodePojo) => {
   const sqlScript = `insert into validate_code values ('${validateCode.account}', '${validateCode.code}', ${validateCode.time});`;
   await pool.query(sqlScript);
 };
+
+export const queryRecodeByAccountAndCode = async (
+  account: string,
+  code: string
+) => {
+  const res = await pool.query<IValidateCodePojo>(
+    `select * from validate_code where account = '${account}' and code = '${code}'`
+  );
+  return res;
+};

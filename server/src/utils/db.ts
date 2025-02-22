@@ -2,11 +2,11 @@ import { Pool } from "pg";
 import config from "@/config/setting.json";
 
 export const pool = new Pool({
-  user: config.user,
-  host: config.host,
-  database: config.database,
-  password: config.password,
-  port: config.port,
+  user: config.postgresql.user,
+  host: config.postgresql.host,
+  database: config.postgresql.database,
+  password: config.postgresql.password,
+  port: config.postgresql.port,
 });
 
 pool.connect((err) => {

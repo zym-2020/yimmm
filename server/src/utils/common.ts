@@ -16,6 +16,7 @@ export enum EErrorCode {
   DUPLICATE_NAME_ERROR = -9, // 文件重名
   DATASOURCE_ERROR = -10, // 数据源错误
   NO_ACCESS = -11, // 没有权限
+  INVALID_VERIFICATION_CODE = -12
 }
 
 export const returnResponse = <T>(
@@ -56,6 +57,8 @@ export const returnErrResponese = (code: number, msg?: string) => {
       return { code, msg: "数据源错误" };
     case EErrorCode.NO_ACCESS:
       return { code, msg: "没有权限" };
+    case EErrorCode.INVALID_VERIFICATION_CODE:
+      return { code, msg: "无效验证码" }
     default:
       return { code, msg: "" };
   }

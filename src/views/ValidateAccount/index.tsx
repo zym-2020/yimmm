@@ -4,23 +4,23 @@
  * Copyright © YourCompanyName All rights reserved
  */
 import { Navigate } from "react-router";
-import { useState } from "react";
+import { IRegisterFormReq } from "@/interface";
 const ValidateAccount = () => {
-  const userExists = document.cookie
-    .split(";")
-    .some((item) => item.trim().startsWith("user="));
-  const accountExists = document.cookie
-    .split(";")
-    .some((item) => item.trim().startsWith("account="));
-  const account = decodeURIComponent(
+  const userJsonString = decodeURIComponent(
     document.cookie
       .split(";")
-      .find((item) => item.trim().startsWith("account="))
-      ?.substring(9) ?? ""
+      .find((item) => item.trim().startsWith("user="))
+      ?.substring(6) ?? ""
   );
-  const [acount] = useState(account);
-  if (userExists && accountExists) {
-    return <div>{`验证码已发至${acount}`}</div>;
+  if (userJsonString) {
+    console.log(userJsonString)
+    const user: IRegisterFormReq = JSON.parse(userJsonString);
+    return <div>
+      <div>{`验证码已发至${user.account}`}</div>
+      <div>
+        
+      </div>
+    </div>;
   }
   return <Navigate to="/" />;
 };
