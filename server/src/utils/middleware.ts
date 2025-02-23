@@ -2,14 +2,19 @@ import { Response, NextFunction } from "express";
 import { verifyToken, returnErrResponese, EErrorCode } from "@/utils/common";
 import { ICustomRequest } from "@/interface";
 
-
-const whiteList = ["/login", "/getPublicKey", "/register", "/validateAccount"];
+const whiteListRegs = [
+  /^\/validateAccount\/([^/]+)$/,
+  /^\/login$/,
+  /^\/getPublicKey$/,
+  /^\/register$/,
+];
 export const handleToken = async (
   req: ICustomRequest,
   res: Response,
   next: NextFunction
 ) => {
-  if (whiteList.includes(req.path)) {
+  const filter = whiteListRegs.filter((item) => item.test(req.path));
+  if (filter.length > 0) {
     next();
   } else {
     const obj = await verifyToken(
@@ -18,7 +23,7 @@ export const handleToken = async (
       res.send(returnErrResponese(EErrorCode.TOKEN_WRONG));
     });
     if (obj) {
-      req.customParams = obj
+      req.customParams = obj;
       next();
     }
   }

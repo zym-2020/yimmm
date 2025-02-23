@@ -4,7 +4,6 @@ import { useState } from "react";
 import { IRegisterFormReq } from "@/interface";
 import { register, getPublicKey } from "@/request";
 import { encodeByRAS, encodeByMD5 } from "@/utils/forge";
-// import { openMessage } from "@/utils/common";
 import { useNavigate, Navigate } from "react-router";
 
 const Register = () => {

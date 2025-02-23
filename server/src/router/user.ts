@@ -97,6 +97,7 @@ router.post("/register", async (req: Request<any, any, IRegisterReq>, res) => {
 router.post("/validateAccount/:code", async (req: Request, res) => {
   const cookies = req.cookies;
   const userJsonString: string = cookies["user"];
+  console.log(userJsonString);
   if (userJsonString) {
     try {
       const user: IRegisterReq = JSON.parse(userJsonString);
@@ -116,12 +117,16 @@ router.post("/validateAccount/:code", async (req: Request, res) => {
             res.send(returnErrResponese(EErrorCode.DEFAULT_EXCEPTION));
             return;
           });
+          res.clearCookie("user");
+          res.send(returnResponse(null));
+          return;
         } else {
           res.send(returnErrResponese(EErrorCode.INVALID_VERIFICATION_CODE));
           return;
         }
       }
       res.send(returnErrResponese(EErrorCode.NO_OBJECT));
+      return;
     } catch (e) {
       console.log(e);
       res.send(returnErrResponese(EErrorCode.DEFAULT_EXCEPTION));

@@ -38,7 +38,7 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-export const get = <T>(
+export const get = <T = null>(
   url: string,
   debounce = true,
   needToken = true
@@ -63,7 +63,7 @@ export const get = <T>(
   }
 };
 
-export const post = <T>(
+export const post = <T = null>(
   url: string,
   data?: any,
   debounce = true,

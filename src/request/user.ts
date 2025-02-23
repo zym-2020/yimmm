@@ -20,3 +20,7 @@ export const register = (reqBody: IRegisterFormReq) => {
 export const getUserInfo = () => {
   return get<IGetUserInfoRes>("/getUserInfo", false);
 };
+
+export const validateAccount = (code: string) => {
+  return post(`/validateAccount/${code}`);
+};
